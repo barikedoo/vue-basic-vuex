@@ -6,12 +6,16 @@
             <span class="price"> ${{ item.price }} </span>
         </li>
         <button @click="changeName('Havana')">Turn into Rum</button>
+        <button @click="reducePrice"> Reduce</button>
+        <!-- <button @click="increment">+1</button> -->
+        <button @click="tripleIncrement">+3</button>
     </div>
 </template>
 
 <script>
 
-import {mapGetters} from 'vuex';
+import { mapGetters } from 'vuex';
+import {mapMutations} from 'vuex';
 
 export default {
     computed: {
@@ -23,7 +27,14 @@ export default {
     methods: {
         changeName(newName) {
             this.$store.dispatch('ruminize', newName);
-        }
+        },
+        ...mapMutations([
+            'reducePrice',
+            'increment',
+            'tripleIncrement'
+        ])
+
+
     }
 }
 </script>

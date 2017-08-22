@@ -1,7 +1,11 @@
 import Vue from 'vue';
 import Vuex from 'vuex'
+import value from './modules/value'
 
 Vue.use(Vuex);
+
+// ИСПОЛЬЗОВАТЬ ЛИБО ТОЛЬКО МУТАЦИИ, ЛИБО ТОЛЬКО ЭКШЕНЫ!!!!!!!!!!!!!!!!!!
+// Если есть хотя бы одно асинхронное действие - лучше использовать экшены на все существующие действия, даже те, которые выполняются синхронно
 
 export const store = new Vuex.Store({
     state: {
@@ -10,7 +14,7 @@ export const store = new Vuex.Store({
             { name: 'Grape', price: 30 },
             { name: 'Apple', price: 40 },
             { name: 'Plums', price: 50 }
-        ]
+        ],
     },
     getters: {
         saleProducts: state => {
@@ -21,24 +25,52 @@ export const store = new Vuex.Store({
                 }
             });
 
-            return saleProducts
-        }
+            return saleProducts;
+        },
     },
+    // Все мутации должны быть синхронны
     mutations: {
         reducePrice: state => {
             state.products.forEach(product => {
-                return product.price -= 1;
+                product.price -= 1;
             })
         },
         changeName: (state,newName) => {
             state.products[0].name = newName;
-        }
+        },
+        increment: (state, payload) => {
+            state.products.forEach(product =>{
+                product.price += payload;
+            })
+        },
+        tripleIncrement: state => {
+            state.products.forEach(product =>{
+                product.price +=3;
+            })
+        },
+
     },
+    // Для всех асинхронных методов используем actions, внутри которых вызываем мутации
     actions: {
         ruminize: (context,newName) => {
             setTimeout(function(){
                 context.commit('changeName', newName)
             }, 3000);
-        }
+        },
+        asyncIncrease: (context,payload) => {
+            setTimeout(() => {
+                context.commit('increment',payload.by);
+            },payload.duration)
+        },
+        asyncDecrease: context => {
+            setTimeout(() => {
+                context.commit('reducePrice');
+            },3000)
+        },
+
+    },
+
+    modules: {
+        value
     }
 })
